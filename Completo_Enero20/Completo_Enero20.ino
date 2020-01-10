@@ -138,56 +138,68 @@ void loop()
       lcd.print(lecturas);
 
       //Maximo de distancia sin agua 18cm
-      if  (distancia > 14) // 9 cm = 1000 mm Agua
+      if  (distancia < 14) // 9 cm = 1000 mm Agua
       {
-        digitalWrite(led, HIGH);
-        Serial.println("Enciendo Led AGUA");
+        digitalWrite(led, LOW);
+
+        if (distancia < 13 && distancia > 10){
+            
+            //Impresion display
+            lcd.clear();
+            lcd.home ();                   // go home
+            lcd.print("Agregar");
+            lcd.setCursor ( 0, 1 );        // go to the 2nd line
+            lcd.print("AGUA");
+          
+          }
+
+        if (val_humedad_porcentaje < 96)
+         {
+            digitalWrite(bomba, LOW); //Al reves por el tema del relay
+            Serial.println("Enciendo bomba");
+                    
+            //Impresion display
+            lcd.clear();
+            lcd.home ();                   // go home
+            lcd.print("Estoy");
+            lcd.setCursor ( 0, 1 ); // go to the 2nd line
+            lcd.print("Regando!");
+            
+            riegos = riegos + 1;
+            
+            for (i=0 ; i<3; i++)
+              {
+            Serial.println(i, " segundos");
+            delay(i+"000");
+            }
+    
+            Serial.println("-------------");
+            digitalWrite(bomba, HIGH); //Al reves por el tema del relay
+    
+            //Impresion display
+            lcd.clear();
+            lcd.home ();                   // go home
+            lcd.print("Termine de");
+            lcd.setCursor ( 0, 1 ); // go to the 2nd line
+            lcd.print("Regar! ;)");
+          }
         
-        //Impresion display
-        lcd.clear();
-        lcd.home ();                   // go home
-        lcd.print("AYUDA!");
-        lcd.setCursor ( 0, 1 );        // go to the 2nd line
-        lcd.print("REVISAR AGUA");
         }else 
           {
-            digitalWrite(led, LOW);
+            digitalWrite(led, HIGH);
+            Serial.println("Enciendo Led AGUA");
+            
+            //Impresion display
+            lcd.clear();
+            lcd.home ();                   // go home
+            lcd.print("AYUDA!");
+            lcd.setCursor ( 0, 1 );        // go to the 2nd line
+            lcd.print("REVISAR AGUA");
+            
             }
 
-     if (val_humedad_porcentaje < 96)
-     {
-        digitalWrite(bomba, LOW); //Al reves por el tema del relay
-        Serial.println("Enciendo bomba");
-                
-        //Impresion display
-        lcd.clear();
-        lcd.home ();                   // go home
-        lcd.print("Estoy");
-        lcd.setCursor ( 0, 1 ); // go to the 2nd line
-        lcd.print("Regando!");
-        
-        riegos = riegos + 1;
-        
-        for (i=0 ; i<3; i++)
-          {
-        Serial.println(i, " segundos");
-        delay(i+"000");
-        }
-
-        Serial.println("-------------");
-        digitalWrite(bomba, HIGH); //Al reves por el tema del relay
-
-        //Impresion display
-        lcd.clear();
-        lcd.home ();                   // go home
-        lcd.print("Termine de");
-        lcd.setCursor ( 0, 1 ); // go to the 2nd line
-        lcd.print("Regar! ;)");
-      }
-    
-
      // Wait a few seconds between measurements.
-     for (i=0 ; i<=600; i++)
+     for (i=0 ; i<=3600; i++) //3600 segundos = 60 minutos
       {
         Serial.println(i, " segundos");
         delay(i+"000");
@@ -207,4 +219,3 @@ void loop()
         digitalWrite(soilPower, LOW);//turn D7 "Off" - Apaga el sensor
         return val;//send current moisture value - Devuelve el valor
       }
-
